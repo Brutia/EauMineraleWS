@@ -1,0 +1,5 @@
+modifié: vendor
+namespace NotificationChannels\IonicPushNotifications;
+l 64: 'verify' => false,
+namespace Zizaco\Entrust\Middleware;
+l.39 : return redirect("/login");
