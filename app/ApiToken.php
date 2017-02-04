@@ -13,4 +13,8 @@ class ApiToken extends Model
     {
     	return $this->api_token;
     }
+    public function commande(){
+    	return $this->hasMany('App\Commande');
+    }
+    
 }

@@ -19,35 +19,34 @@
 				<div class="panel-heading">
 					<div class="row">
 						<div class="col col-xs-6">
-							<h3 class="panel-title">Liste des utilisateurs</h3>
+							<h3 class="panel-title">Liste des fils rouges en cours</h3>
 						</div>
-<!-- 						<div class="col col-xs-6 text-right"> -->
-<!-- 							<a href={{URL::to('/admin/user/create')}}><button type="button" class="btn btn-sm btn-primary btn-create"> Créer un utilisateur</button></a> -->
-<!-- 						</div> -->
+						<div class="col col-xs-6 text-right">
+							<a href="{{route('fil_rouge.create')}}"><button type="button" class="btn btn-sm btn-primary btn-create"> Cr&eacute;er un fil rouge</button></a>
+						</div>
 					</div>
 				</div>
 				<div class="panel-body">
-					<table class="table table-striped table-bordered table-list" id="event_list">
+					<table class="table table-striped table-bordered table-list" id="fil_rouge_list">
 						<thead>
 							<tr>
 								<th><em class="fa fa-cog"></em></th>
 								<th class="hidden-xs">ID</th>
-								<th>Nom</th>
-								<th>username</th>
-								<th>Role</th>
+								<th>Nom du fil rouge</th>
+								<th>Num&eacute;ro d'apparition sur l'appli (commence &agrave; 0)</th>
 							</tr>
 						</thead>
 						<tbody>
-							@foreach($users as $user)
+							@foreach($fil_rouges as $fil_rouge)
 								<tr>
 									<td>
 										<div class="row">
 											<div class="col-md-10">
 												<div class="col-md-5">
-													<a href="{{URL::to('/admin/user/'.$user->id.'/edit')}}" class="btn btn-default"><em class="fa fa-pencil"></em></a> 
+													<a href="{{route('fil_rouge.edit', ['id'=>$fil_rouge->id])}}" class="btn btn-default"><em class="fa fa-pencil"></em></a> 
 												</div>
 												<div class="col-md-5 col-md-offset-1">
-													<form method="post" class="" action="{{URL::to('/admin/user/'.$user->id)}}" >
+													<form method="post" class="" action="{{route('fil_rouge.destroy', ['id'=>$fil_rouge->id])}}" >
 														<div class="">
 														<input type="hidden" name="_method" value="DELETE">
 														{!! csrf_field() !!}
@@ -58,16 +57,9 @@
 											</div>
 										</div>
 									</td>
-									<td class="hidden-xs">{{$user->id}}</td>
-									<td>{{$user->name}}</td>
-									<td>{{$user->email}}</td>
-									<td>
-										<ul>
-											@foreach($user->roles as $role)
-												<li>{{$role->name}}</li>
-											@endforeach
-										</ul>
-									</td>
+									<td class="hidden-xs">{{$fil_rouge->id}}</td>
+									<td>{{$fil_rouge->nom}}</td>
+									<td>{{$fil_rouge->numero}}</td>
 								</tr>
 							@endforeach
 						</tbody>
@@ -82,7 +74,7 @@
 <script type="text/javascript">
 	
 	$(document).ready( function () {
-	    $('#event_list').DataTable({
+	    $('#fil_rouge_list').DataTable({
 		    "language":{
 		    	"sProcessing":     "Traitement en cours...",
 		    	"sSearch":         "Rechercher&nbsp;:",

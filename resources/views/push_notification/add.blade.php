@@ -14,9 +14,8 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			<form role="form" class="col-md-12 go-right" method="post"
-				action="{{route('push.create')}}">
-				<input type="hidden" name="_method" value="PUT"> {!! csrf_field()
-				!!}
+				action="{{route('push.store')}}">
+				 {!! csrf_field() !!}
 				<h2>Ajout d'une notification</h2>
 				<div class="form-group">
 					<label for="title">Titre de la notification</label> <input
@@ -29,12 +28,16 @@
 					<textarea name=message class="form-control" required id="message"></textarea>
 				</div>
 
-				<div class="col-sm-offset-2 col-sm-10">
+				<div class="col-sm-4">
 					<button type="button" class="btn btn-primary" id="push_send">Envoyer</button>
 				</div>
 
-				<div class="col-sm-offset-2 col-sm-10">
+				<div class="col-sm-4">
 					<button type="submit" class="btn btn-primary">Enregistrer</button>
+				</div>
+				
+				<div class="col-sm-4">
+					<a class="btn btn-primary" href="{{route('push.index')}}">Retour</a>
 				</div>
 
 			</form>
@@ -65,7 +68,9 @@
 			            'X-CSRF-TOKEN' :"{{ csrf_token() }}"
 			        }
 				}).done(function() {
+						$('#title').val("");
 
+						$('#message').val("");
 						$('#alert_sucess').show();
 				});
 	    });

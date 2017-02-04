@@ -48,20 +48,25 @@ class ApiLoginController extends Controller
 			
 			if($user->apiToken == null){
 				
-				if(($apiToken = ApiToken::where('api_token','=',$pushToken)->first()) != null){
-				
-					$user->apiToken()->associate($apiToken);
-					$user->save();
-				}else{
+				if(($apiToken = ApiToken::where('api_token','=',$pushToken)->first()) != null){ //l'api_token existe mais n'est pas lié à l'utilisateur
+					$user->apiToken()->save($apiToken);
+				}else{ //l'api token n'existe pas
 					$apiToken = new ApiToken();
 					$apiToken->api_token = $pushToken;
 					$user->apiToken()->save($apiToken);
 				}
 				
+			}else{ //il existe mais n'est plus valide
+				
+				$apiToken = $user->apiToken;
+				
+				$apiToken->api_token = $pushToken;
+				$user->apiToken()->save($apiToken);
+				$user->save();
 			}
 			
 		}else{ //dans le cas où l'user est anonyme
-			if($apiToken = DB::table('api_tokens')->where('api_token','=',$pushToken)->first() == null){
+			if(($apiToken = DB::table('api_tokens')->where('api_token','=',$pushToken)->first()) == null){
 				$apiToken = new ApiToken();
 				$apiToken->api_token = $pushToken;
 				$apiToken->save();

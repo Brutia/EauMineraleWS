@@ -1,54 +1,76 @@
-@extends('layouts.app') 
+@extends('layouts.app') @section('content')
 
 
-@section('content')
 <div class="container">
+	<div class="alert alert-success alert-dismissible" role="alert"
+		id="alert_sucess">
+		<button type="button" class="close" data-dismiss="alert"
+			aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<strong>Succ&egrave;s!</strong> Notification envoy&eacute;e
+
+	</div>
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
-			<form role="form" class="col-md-12 go-right" method="post" action="{{URL::to('/admin/user/'.$user->id)}}" >
-				<input type="hidden" name="_method" value="PUT">
-				{{ csrf_field() }}
-				<h2>Editer l'utilisateur : {{$user->username}}</h2>
-				<label>Role(s)</label></br>
-				<select id="selectpicker" name="role[]" multiple>
-					@foreach($roles as $role)
-				  		<option value="{{$role->id}}" 
-				  			@if(in_array($role->name, $user_roles) )
-				  				selected 
-				  			@endif 
-				  			>
-				  			{{$role->name}}
-				  		</option>
-				  	@endforeach
-				</select>
-				
+			<form role="form" class="col-md-12 go-right" method="post"
+				action="{{route('push.store')}}">
+				 {!! csrf_field() !!}
+				<h2>Ajout d'une notification</h2>
 				<div class="form-group">
-					<label for="name">Nom de l'utilisateur</label> <input name="name"
-						class="form-control" value="{{$user_name}}">
+					<label for="title">Titre de la notification</label> <input
+						name="title" type="text" class="form-control" required id="title" value="{{$push->title}}">
+
+				</div>
+				<div class="form-group">
+
+					<label for="message">Message</label>
+					<textarea name=message class="form-control" required id="message" >{{$push->message}}</textarea>
+				</div>
+
+				<div class="col-sm-4">
+					<button type="button" class="btn btn-primary" id="push_send">Envoyer</button>
+				</div>
+
+				<div class="col-sm-4">
+					<button type="submit" class="btn btn-primary">Enregistrer</button>
 				</div>
 				
-				<div class="col-sm-offset-2 col-sm-10">
-      				<button type="submit" class="btn btn-primary">Enregistrer</button>
-    			</div>
-				
+				<div class="col-sm-4">
+					<a class="btn btn-primary" href="{{route('push.index')}}">Retour</a>
+				</div>
+
 			</form>
 		</div>
 	</div>
 </div>
 
+<script type="text/javascript" src="{{URL::asset('js/jquery.js')}}"></script>
+<script type="text/javascript"
+	src="{{URL::asset('js/bootstrap.min.js')}}"></script>
 
-@endsection
 
 
-<script type="text/javascript" src="{{URL::asset('js/jquery.min.js')}}"></script>
-<link rel="stylesheet" type="text/css" href="{{URL::asset('css/jquery-ui.css')}}" >
-<link rel="stylesheet" type="text/css" href="{{URL::asset('css/bootstrap-select.min.css')}}" >
-<script type="text/javascript" src="{{URL::asset('js/bootstrap.min.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('js/bootstrap-select.min.js')}}"></script>
-<script src="{{URL::asset('js/jquery-ui.min.js')}}"></script>
 <script type="text/javascript">
-	$(document).ready(function(){
-		$('#selectpicker').selectpicker();
-	});
-</script>
 
+		$(document).ready(function(){
+			$('#alert_sucess').hide();
+		});
+
+		
+
+	    $('#push_send').click(function(){
+	    	$.ajax({
+				  url: "{{url('admin/sendnotif')}}",
+				  method: "POST",
+				  data: { titre : $('#title').val() ,message: $('#message').val() },
+				  headers : {
+			            'X-CSRF-TOKEN' :"{{ csrf_token() }}"
+			        }
+				}).done(function() {
+						$('#alert_sucess').show();
+				});
+	    });
+		
+</script>
+@endsection

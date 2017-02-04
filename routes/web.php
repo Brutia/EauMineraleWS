@@ -21,9 +21,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['role:admin']], function() {
 	Route::resource('commandes', 'CommandeController');
 	Route::resource('user', 'UserController');
 	Route::resource('push', 'PushNotificationController');
+	Route::resource('fil_rouge', 'FilRougeController');
 	Route::post('takeCommande', 'CommandeController@takeCommande');
 	Route::post('sendnotif', 'PushNotificationController@sendnotif');
+	Route::get('getCommandes', 'CommandeController@getCommandes');
 	
 });
-
-Route::get('/test', 'PushController@testpush');
