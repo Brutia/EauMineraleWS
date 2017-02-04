@@ -57,18 +57,22 @@ class CommandeController extends Controller {
 		$commande->lieu = $request->input ( "lieu" );
 		$heure = preg_split("#:#", $request->input("heure"));
 		$jourMois = preg_split("#\/#", $request->input("jour"));
-		$commande->date = date ( "Y-m-d H:i:s", mktime($heure[0], $heure[1],null, $jourMois[0], $jourMois[1]));
+		$commande->date = date ( "Y-m-d H:i:s", mktime($heure[0], $heure[1],null, $jourMois[0], $jourMois[1],2017));
 		$commande->number = $request->input ( "nombre" );
 		
-		$filRouge = FilRouge::where("number", "=", $request->input("nr_fil_rouge"))->first();
+		$filRouge = FilRouge::where("numero", "=", $request->input("nr_fil_rouge"))->first();
 		$push_token = ApiToken::where("api_token","=", $request->input("push_token"))->first();
-		$push_token->commande()->save($commande);
-		
-		if ($filRouge->commande()->save($commande)) {
-			return response ()->json (["status"=>"ok"]);
-		} else {
+		if($push_token->commande()->save($commande)){
+			if ($filRouge->commande()->save($commande)) {
+				return response ()->json (["status"=>"ok"]);
+			} else {
+				return response ()->json ( ["status"=>"error"], 500 );
+			}
+		}else{
 			return response ()->json ( ["status"=>"error"], 500 );
 		}
+		
+		
 	}
 	
 	/**
@@ -136,5 +140,20 @@ class CommandeController extends Controller {
 		return response ()->json ( ["data"=>$commandes ]
 				
 		 );
+	}
+	
+	public function getCommandesAppli(Request $request){
+		$pushToken = $request->input("push_token");
+		$apiToken = ApiToken::with("user")->where("api_token","=", $pushToken)->first();
+		if(isset($apiToken->user) && $apiToken->user->hasRole("admin")){ // admin, on renvoie les commandes qu'il doit traiter
+			$commandes = Commande::where("user_id","=",null)->where("user_id","=",$apiToken->user->id)->orderBy("date","desc")->get();
+		
+		}else{ //simple utilisateur on renvoie que les commandes le concernant
+			$commandes = Commande::join("api_tokens","commandes.api_token_id","=","api_tokens.id")->where("api_tokens.api_token","=",$pushToken)->get();
+			
+		}
+		return response()->json($commandes);
+		
+		
 	}
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 <script type="text/javascript" src="{{URL::asset('js/jquery.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('js/jquery.datatables.min.js')}}"></script>
+<script type="text/javascript" src="{{URL::asset('js/jquery.dataTables.min.js')}}"></script>
 <link href="{{URL::asset('css/jquery.dataTables.min.css')}}"
 	rel='stylesheet' type='text/css'>
 <link href="{{URL::asset('css/font-awesome.min.css')}}"

@@ -10,5 +10,9 @@ class Commande extends Model
     	return $this->belongsTo('App\User');
 	}
 	
+	public function apiToken(){
+		return $this->belongsTo("App\ApiToken");
+	}
+	
 	
 }

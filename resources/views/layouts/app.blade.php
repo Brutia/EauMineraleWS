@@ -12,19 +12,15 @@
 
     <!-- Styles -->
     <link href="{{ URL::asset('css/app.css') }}" rel="stylesheet">
-    
 	<link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
             'csrfToken' => csrf_token(),
         ]); ?>
     </script>
-    
-    <script href="{{ URL::asset('js/jquery.min.js') }}"></script>
-    <script href="{{ URL::asset('js/bootstrap.min.js') }}"></script>
-    <script href="{{ URL::asset('js/app.js') }}"></script> 
+    <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ URL::asset('js/app.js') }}"></script>
 </head>
 <body>
     <div id="app">
@@ -87,5 +83,6 @@
         @yield('content')
     </div>
 
+    <!-- Scripts -->
 </body>
 </html>

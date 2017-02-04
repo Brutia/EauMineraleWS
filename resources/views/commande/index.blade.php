@@ -1,5 +1,4 @@
 @extends('layouts.app') @section('content')
-<script type="text/javascript" src="{{URL::asset('js/jquery.min.js')}}"></script>
 <script type="text/javascript"
 	src="{{URL::asset('js/jquery.dataTables.js')}}"></script>
 <link href="{{URL::asset('css/jquery.dataTables.css')}}"

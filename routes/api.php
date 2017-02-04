@@ -24,3 +24,4 @@ Route::get('/getUserInfo', 'ApiAuth\ApiLoginController@getAuthenticatedUser')->m
 Route::get('/getInfo', 'PushNotificationController@apiIndex')->middleware('cors');
 Route::post('/postCommande', 'CommandeController@store')->middleware('cors');
 Route::get('/getFilRouges', 'FilRougeController@getFilRouge')->middleware('cors');
+Route::get("/getCommandesAppli", 'CommandeController@getCommandesAppli')->middleware("cors");
