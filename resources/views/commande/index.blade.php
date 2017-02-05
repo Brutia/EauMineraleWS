@@ -5,6 +5,8 @@
 	rel='stylesheet' type='text/css'>
 <link href="{{URL::asset('css/font-awesome.min.css')}}" rel='stylesheet'
 	type='text/css'>
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 <div class="row">
 	<div class="col-md-8 col-md-offset-2" id="status">
@@ -35,7 +37,7 @@
 				<div class="panel-heading">
 					<div class="row">
 						<div class="col col-xs-6">
-							<h3 class="panel-title">Commandes &agrave; traiter</h3>
+							<h3 class="panel-title">Commandes <input type="checkbox" checked data-toggle="toggle" data-on="&agrave; traiter" data-off="dans l'historique" id="toggle-event"></h3> 
 						</div>
 					</div>
 				</div>
@@ -46,6 +48,7 @@
 							<tr>
 								<th class="hidden-xs">ID</th>
 								<th>Nom demandeur</th>
+								<th>Fil Rouge</th>
 								<th>Lieu</th>
 								<th>Livraison pour:</th>
 								<th>Nombre</th> @if($commandeEnCours)
@@ -65,11 +68,12 @@
 	</div>
 </div>
 <script type="text/javascript">
-	
+
+	var a_traiter = "oui";
 	$(document).ready( function () {
 		var jsonData;
 		var table = $('#event_list').DataTable({
-			"order": [[ 3, "asc" ]],
+			"order": [[ 4, "asc" ]],
 		    "language":{
 		    	"sProcessing":     "Traitement en cours...",
 		    	"sSearch":         "Rechercher&nbsp;:",
@@ -93,11 +97,12 @@
 	    		}
 		    },
 		    "ajax": {
-		        "url": "{{url('admin/getCommandes')}}"
+		        "url": "{{url('admin/getCommandes')}}"+"?a_traiter="+a_traiter
 		    },
 	        "columns": [
 	                    { "data": "id" },
 	                    { "data": "cname" },
+	                    { "data": "nom"},
 	                    { "data": "lieu" },
 	                    { "data": "date" },
 	                    { "data": "number" },
@@ -131,7 +136,7 @@
 		});
 
 		setInterval( function () {
-		    table.ajax.reload( null, false ); // user paging is not reset on reload
+		    table.ajax.url("{{url('admin/getCommandes')}}"+"?a_traiter="+a_traiter).load( null, false ); // user paging is not reset on reload
 		}, 5000 );
 		
 		$(document).on('click', '.btn-success', function(){
@@ -153,6 +158,12 @@
 		$(document).on('click', ".dismiss",function(){
 
 			$(".alert-dismissible").remove();
+		});
+
+		$('#toggle-event').change(function() {
+			a_traiter = $(this).prop('checked')? "oui":"non";
+			table.ajax.url("{{url('admin/getCommandes')}}"+"?a_traiter="+a_traiter).load( null, false ); // user paging is not reset on reload
+			
 		});
 	});
 

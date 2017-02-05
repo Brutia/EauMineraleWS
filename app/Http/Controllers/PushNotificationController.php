@@ -106,14 +106,6 @@ class PushNotificationController extends Controller
     }
     
     public function sendNotif( Request $request){
-//     	$pushNotification = new PushNotification();
-//     	$pushNotification->title = $request->input('titre');
-//     	$pushNotification->message = $request->input('message');
-//     	$pushNotification->sended = true;
-//     	$pushNotification->save();
-//     	$tokens = ApiToken::all();
-//     	Notification::send($tokens, new Info($pushNotification->title, $pushNotification->message));
-//     	return response()->json("ok");
 
     	$optionBuiler = new OptionsBuilder();
     	$optionBuiler->setTimeToLive(60*20);
@@ -135,7 +127,7 @@ class PushNotificationController extends Controller
     	
 //     	$token = "";
     	
-    	$downstreamResponse = FCM::sendTo($tokens, $option, $notification,$data);
+    	$downstreamResponse = FCM::sendTo($tokens, $option, null,$data);
     	
     	$downstreamResponse->numberSuccess();
     	$downstreamResponse->numberFailure();

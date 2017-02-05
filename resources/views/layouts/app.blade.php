@@ -19,7 +19,6 @@
             'csrfToken' => csrf_token(),
         ]); ?>
     </script>
-    <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ URL::asset('js/app.js') }}"></script>
 </head>
 <body>
@@ -72,6 +71,10 @@
                                             {{ csrf_field() }}
                                         </form>
                                     </li>
+                                    <li><a href="{{ route('push.index')}}">administration Push/infos</a></li>
+                                    <li><a href="{{ route('commandes.index')}}">Administration des commandes</a></li>
+                                    <li><a href="{{ route('fil_rouge.index')}}">Administraton des fils rouges</a></li>	
+                                    <li><a href="{{ route('user.index')}}">Administration des utilisateurs</a></li>	
                                 </ul>
                             </li>
                         @endif

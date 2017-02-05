@@ -61,6 +61,11 @@ class CommandeController extends Controller {
 		$commande->number = $request->input ( "nombre" );
 		
 		$filRouge = FilRouge::where("numero", "=", $request->input("nr_fil_rouge"))->first();
+		
+		if($filRouge == null){
+			return response()->json(["status"=>"error"],440);
+		}
+		
 		$push_token = ApiToken::where("api_token","=", $request->input("push_token"))->first();
 		if($push_token->commande()->save($commande)){
 			if ($filRouge->commande()->save($commande)) {
@@ -134,22 +139,26 @@ class CommandeController extends Controller {
 		$commande->user ()->associate ( $user )->save ();
 		return response ()->json ( "ok" );
 	}
-	public function getCommandes() {
-		$commandes = Commande::select('commandes.id', 'commandes.name as cname','lieu','number','date','users.name as uname','number')->leftJoin('users','users.id', '=', 'commandes.user_id') ->orderBy ( 'date', 'desc' )->get ();
-	
-		return response ()->json ( ["data"=>$commandes ]
-				
-		 );
+	public function getCommandes(Request $request) {
+		if($request->input("a_traiter") ==  "oui"){
+			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number')->where("user_id","=", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
+		}else{
+			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number')->where("user_id","<>", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
+			
+		}
+		
+		return response ()->json ( ["data"=>$commandes ]);
 	}
 	
 	public function getCommandesAppli(Request $request){
 		$pushToken = $request->input("push_token");
 		$apiToken = ApiToken::with("user")->where("api_token","=", $pushToken)->first();
 		if(isset($apiToken->user) && $apiToken->user->hasRole("admin")){ // admin, on renvoie les commandes qu'il doit traiter
-			$commandes = Commande::where("user_id","=",null)->where("user_id","=",$apiToken->user->id)->orderBy("date","desc")->get();
+
+			$commandes = Commande::where("user_id","=",null)->orWhere("user_id","=",$apiToken->user->id)->orderBy("date","desc")->get();
 		
 		}else{ //simple utilisateur on renvoie que les commandes le concernant
-			$commandes = Commande::join("api_tokens","commandes.api_token_id","=","api_tokens.id")->where("api_tokens.api_token","=",$pushToken)->get();
+			$commandes = Commande::join("api_tokens","commandes.api_token_id","=","api_tokens.id")->join("fil_rouges" ,"fil_rouges.id","=","commandes.fil_rouge_id")->where("api_tokens.api_token","=",$pushToken)->orderBy("commandes.date","asc")->get();
 			
 		}
 		return response()->json($commandes);
