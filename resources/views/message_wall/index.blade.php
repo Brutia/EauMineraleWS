@@ -2,7 +2,7 @@
 
 @section('content')
 <script type="text/javascript" src="{{URL::asset('js/jquery.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('js/jquery.datatables.min.js')}}"></script>
+<script type="text/javascript" src="{{URL::asset('js/jquery.dataTables.min.js')}}"></script>
 <link href="{{URL::asset('css/jquery.dataTables.min.css')}}"
 	rel='stylesheet' type='text/css'>
 <link href="{{URL::asset('css/font-awesome.min.css')}}"
@@ -19,10 +19,7 @@
 				<div class="panel-heading">
 					<div class="row">
 						<div class="col col-xs-6">
-							<h3 class="panel-title">Liste des fils rouges en cours</h3>
-						</div>
-						<div class="col col-xs-6 text-right">
-							<a href="{{route('fil_rouge.create')}}"><button type="button" class="btn btn-sm btn-primary btn-create"> Cr&eacute;er un fil rouge</button></a>
+							<h3 class="panel-title">Liste des messages du live wall</h3>
 						</div>
 					</div>
 				</div>
@@ -30,39 +27,13 @@
 					<table class="table table-striped table-bordered table-list" id="fil_rouge_list">
 						<thead>
 							<tr>
-								<th><em class="fa fa-cog"></em></th>
 								<th class="hidden-xs">ID</th>
-								<th>Nom du fil rouge</th>
-								<th>Num&eacute;ro d'apparition sur l'appli (commence &agrave; 0)</th>
+								<th>Nom ou pseudo</th>
+								<th>Message</th>
+								<th><em class="fa fa-cog"></em></th>
 							</tr>
 						</thead>
-						<tbody>
-							@foreach($fil_rouges as $fil_rouge)
-								<tr>
-									<td>
-										<div class="row">
-											<div class="col-md-10">
-												<div class="col-md-5">
-													<a href="{{route('fil_rouge.edit', ['id'=>$fil_rouge->id])}}" class="btn btn-default"><em class="fa fa-pencil"></em></a> 
-												</div>
-												<div class="col-md-5 col-md-offset-1">
-													<form method="post" class="" action="{{route('fil_rouge.destroy', ['id'=>$fil_rouge->id])}}" >
-														<div class="">
-														<input type="hidden" name="_method" value="DELETE">
-														{!! csrf_field() !!}
-														<button type="submit" class="btn btn-danger fa fa-trash" style="min-height:34px; min-width:38px"></button>
-														</div>
-													</form>
-												</div>
-											</div>
-										</div>
-									</td>
-									<td class="hidden-xs">{{$fil_rouge->id}}</td>
-									<td>{{$fil_rouge->nom}}</td>
-									<td>{{$fil_rouge->numero}}</td>
-								</tr>
-							@endforeach
-						</tbody>
+						
 					</table>
 
 				</div>
@@ -72,9 +43,9 @@
 	</div>
 </div>
 <script type="text/javascript">
-	
 	$(document).ready( function () {
-	    $('#fil_rouge_list').DataTable({
+		var table = $('#fil_rouge_list').DataTable({
+			"order": [[ 0, "desc" ]],
 		    "language":{
 		    	"sProcessing":     "Traitement en cours...",
 		    	"sSearch":         "Rechercher&nbsp;:",
@@ -95,9 +66,40 @@
 		    	"oAria": {
 		    		"sSortAscending":  ": activer pour trier la colonne par ordre croissant",
 		    		"sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-		    	}}}
-			    );
-	} );
+		    	}
+		    },
+		    "ajax": {
+		        "url": "{{url('admin/live_messages')}}"+"?id=0",
+		        "dataSrc" : function(json){
+					return json;
+		        }
+		    },
+	        "columns": [
+	                    { "data": "id" },
+	                    { "data": "name" },
+	                    { "data": "message"},
+	                    { "data": function( row){
+		                    currId=row.id;
+		                    //console.log(currId);
+	                    	var actions = '<div class="row">\
+							<div class="col-md-2 col-md-offset-1"> \
+								<form method="post" class="" action="{{route("wall_message.index")}}/'+row.id+'" >\
+									<div class="">\
+									<input type="hidden" name="_method" value="DELETE">\
+									{!! csrf_field() !!}\
+									<button type="submit" class="btn btn-danger fa fa-trash" style="min-height:34px; min-width:38px"></button>\
+									</div>\
+								</form>\
+							</div>'
+							return actions;
+	                    }}
+	                ]
+		});
+
+		setInterval( function () {
+		    table.ajax.url("{{url('admin/live_messages')}}"+"?id=0").load( null, false ); // user paging is not reset on reload
+		}, 5000 );
+	    });
 </script>
 
 @endsection

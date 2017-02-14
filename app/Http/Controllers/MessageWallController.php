@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\MessageWall;
 
 class MessageWallController extends Controller
 {
@@ -13,7 +14,8 @@ class MessageWallController extends Controller
      */
     public function index()
     {
-        //
+        $messages = MessageWall::all();
+        return view("message_wall.index", ["messages"=> $messages]);
     }
 
     /**
@@ -23,7 +25,7 @@ class MessageWallController extends Controller
      */
     public function create()
     {
-        //
+        return view("message_wall.add");
     }
     
     public function display(){
@@ -38,7 +40,19 @@ class MessageWallController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $message = new MessageWall();
+        if(htmlspecialchars($request->input("name")) == ""){
+        	$message->name="Anonyme";
+        }else{
+        	$message->name = htmlspecialchars($request->input("name"));
+        }
+        
+        $message->message = htmlspecialchars($request->input("message"));
+        if($message->save()){
+        	return response()->json(["status"=>"ok"]);
+        	
+        }
+        return response()->json(["status"=>"error"],500);
     }
 
     /**
@@ -83,6 +97,13 @@ class MessageWallController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $message = MessageWall::find($id);
+        $message->delete();
+        return redirect()->route("wall_message.index");
+    }
+    
+    public function getMessages(Request $request){
+    	return response()->json(MessageWall::where("id", ">", $request->input("id"))->get());
+    	
     }
 }

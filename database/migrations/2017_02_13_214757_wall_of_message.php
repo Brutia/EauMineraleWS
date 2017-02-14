@@ -13,7 +13,7 @@ class WallOfMessage extends Migration
      */
     public function up()
     {
-    	Schema::create('message_wall', function (Blueprint $table) {
+    	Schema::create('message_walls', function (Blueprint $table) {
     		$table->increments('id');
     	
     		$table->string('name')->default("Anonyme");

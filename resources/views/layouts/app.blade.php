@@ -42,6 +42,7 @@
                         <img class="img-responsive" src="{{asset('images/logo_app_eau_minerale.png')}}" alt="Chania">
                     </a>
                     
+                    
                 </div>
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
@@ -49,7 +50,13 @@
                     <ul class="nav navbar-nav">
                         &nbsp;
                     </ul>
-
+					<ul class="nav navbar-nav navbar-left">
+						<li>
+							<a href="{{ url('/live_wall')}}">
+		                    	Acc&eacute;der au live wall
+		                    </a>
+						</li>
+					</ul>
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                         <!-- Authentication Links -->
@@ -75,6 +82,7 @@
                                         </form>
                                     </li>
                                     <li><a href="{{ route('push.index')}}">administration Push/infos</a></li>
+                                    <li><a href="{{ route('wall_message.index')}}">Administration du live wall</a></li>
                                     <li><a href="{{ route('commandes.index')}}">Administration des commandes</a></li>
                                     <li><a href="{{ route('fil_rouge.index')}}">Administraton des fils rouges</a></li>	
                                     <li><a href="{{ route('user.index')}}">Administration des utilisateurs</a></li>	

@@ -43,10 +43,10 @@ content: "";
   color:#003366;
 }
 .chat .chat-history .me-message {
-  background: #E9724C;
+  background: #4ca8e9;
 }
 .chat .chat-history .me-message:after {
-  border-color: #E9724C transparent;
+  border-color: #4ca8e9 transparent;
     /*right: 20px;*/
     top: -15px;
     left: auto;
@@ -90,7 +90,7 @@ content: "";
 }
 
 .me {
-  color: #E9724C;
+  color: #4ca8e9;
 }
 
 h1, h2, h3, h4, h5, h6 {
