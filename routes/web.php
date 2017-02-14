@@ -12,10 +12,11 @@
 */
 
 
-Route::get('/home', function(){
-	return view('home');
-});
+Route::get('/', "HomeController@home");
 Auth::routes();
+Route::post("/sendCommande","CommandeController@sendCommande");
+Route::get("live_wall", "MessageWallController@add");
+Route::post("store_live_wall", "MessageWallController@store");
 Route::group(['prefix' => 'admin', 'middleware' => ['role:admin']], function() {
 	
 	Route::resource('commandes', 'CommandeController');
@@ -25,5 +26,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['role:admin']], function() {
 	Route::post('takeCommande', 'CommandeController@takeCommande');
 	Route::post('sendnotif', 'PushNotificationController@sendnotif');
 	Route::get('getCommandes', 'CommandeController@getCommandes');
+	Route::get('display_live_wall', 'MessageWallController@display');
 	
 });

@@ -54,11 +54,12 @@ class CommandeController extends Controller {
 			$commande->name = $request->input ( "name" );
 		}
 		
-		$commande->lieu = $request->input ( "lieu" );
+		$commande->lieu = htmlspecialchars($request->input ( "lieu" ));
 		$heure = preg_split("#:#", $request->input("heure"));
 		$jourMois = preg_split("#\/#", $request->input("jour"));
 		$commande->date = date ( "Y-m-d H:i:s", mktime($heure[0], $heure[1],null, $jourMois[0], $jourMois[1],2017));
-		$commande->number = $request->input ( "nombre" );
+		$commande->number = htmlspecialchars($request->input ( "nombre" ));
+		$commande->commentaire = htmlspecialchars($request->input("commentaire"));
 		
 		$filRouge = FilRouge::where("numero", "=", $request->input("nr_fil_rouge"))->first();
 		
@@ -141,9 +142,9 @@ class CommandeController extends Controller {
 	}
 	public function getCommandes(Request $request) {
 		if($request->input("a_traiter") ==  "oui"){
-			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number')->where("user_id","=", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
+			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number', 'commentaire')->where("user_id","=", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
 		}else{
-			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number')->where("user_id","<>", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
+			$commandes = Commande::select('commandes.id', 'commandes.name as cname',"fil_rouges.nom",'lieu','number','date','users.name as uname','number', 'commentaire')->where("user_id","<>", null)->leftJoin('users','users.id', '=', 'commandes.user_id')->leftJoin("fil_rouges", "commandes.fil_rouge_id", "=", "fil_rouges.id") ->orderBy ( 'date', 'desc' )->get ();
 			
 		}
 		
@@ -155,13 +156,48 @@ class CommandeController extends Controller {
 		$apiToken = ApiToken::with("user")->where("api_token","=", $pushToken)->first();
 		if(isset($apiToken->user) && $apiToken->user->hasRole("admin")){ // admin, on renvoie les commandes qu'il doit traiter
 
-			$commandes = Commande::where("user_id","=",null)->orWhere("user_id","=",$apiToken->user->id)->orderBy("date","desc")->get();
+			$commandes = Commande::select("commandes.id as id", "nom", "number", "lieu", "name", "commentaire")->where("user_id","=",null)->join("fil_rouges" ,"fil_rouges.id","=","commandes.fil_rouge_id")->orderBy("commandes.date","desc")->get();
 		
 		}else{ //simple utilisateur on renvoie que les commandes le concernant
 			$commandes = Commande::join("api_tokens","commandes.api_token_id","=","api_tokens.id")->join("fil_rouges" ,"fil_rouges.id","=","commandes.fil_rouge_id")->where("api_tokens.api_token","=",$pushToken)->orderBy("commandes.date","asc")->get();
 			
 		}
 		return response()->json($commandes);
+	}
+	
+	public function takeCommandeAppli(Request $request){
+		if($request->input('token','') != ''){ // dans le cas où l'utilisateur est authentifié
+			$user = JWTAuth::parseToken()->toUser();
+			if($user->hasRole("admin")){
+				$commande = Commande::find($request->input("commande_id"));
+				if($commande != null && $commande->user ()->associate ( $user )->save ()){
+
+					return response ()->json ( "ok" );
+				}
+			}
+		}
+			
+		return response()->json(["status"=>"error"],500);
+	}
+	
+	public function sendCommande(Request $request){
+		
+		$commande = new Commande();
+		$fil_rouge = FilRouge::find($request->input("fil_rouge"));
+		if($fil_rouge == null){
+			return response()->json(["status"=>"error"],500);
+		}
+		$commande->name = htmlspecialchars($request->input("name"));
+		$commande->lieu = htmlspecialchars($request->input("lieu"));
+		$commande->commentaire = htmlspecialchars($request->input("commentaire"));
+		$commande->number = htmlspecialchars($request->input("number"));
+		$commande->date = date("Y-m-d H:i:s");
+		
+		if($fil_rouge->commande()->save($commande)){
+			return response()->json(["status"=>"ok"]);
+		}else{
+			return response()->json(["status"=>"error"],500);
+		}
 		
 		
 	}

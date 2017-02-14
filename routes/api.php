@@ -25,3 +25,5 @@ Route::get('/getInfo', 'PushNotificationController@apiIndex')->middleware('cors'
 Route::post('/postCommande', 'CommandeController@store')->middleware('cors');
 Route::get('/getFilRouges', 'FilRougeController@getFilRouge')->middleware('cors');
 Route::get("/getCommandesAppli", 'CommandeController@getCommandesAppli')->middleware("cors");
+Route::post("/takeCommande", "CommandeController@takeCommandeAppli")->middleware("cors","jwt.auth");
+Route::get("/disconnect", "ApiAuth\ApiLoginController@disconnect")->middleware("cors");

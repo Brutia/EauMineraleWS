@@ -51,9 +51,11 @@
 								<th>Fil Rouge</th>
 								<th>Lieu</th>
 								<th>Livraison pour:</th>
-								<th>Nombre</th> @if($commandeEnCours)
+								<th>Nombre</th> 
+								<th>Commentaire</th>
+								@if($commandeEnCours)
 								<th>Commande trait&eacute;e par</th> @endif
-
+								
 								<th><em class="fa fa-cog"></em></th>
 
 							</tr>
@@ -106,6 +108,7 @@
 	                    { "data": "lieu" },
 	                    { "data": "date" },
 	                    { "data": "number" },
+	                    { "data": "commentaire"},
 	                    { "data": "uname" },
 	                    { "data": function( row){
 	                    	var actions = '<div class="row">\

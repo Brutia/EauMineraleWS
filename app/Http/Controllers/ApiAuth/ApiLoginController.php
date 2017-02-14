@@ -37,8 +37,8 @@ class ApiLoginController extends Controller
 	public function getAuthenticatedUser()
 	{
 		$user = JWTAuth::parseToken()->toUser();
-		
-		return response()->json(compact('user'));
+		$isAdmin = $user->hasRole("admin");
+		return response()->json(compact('user', 'isAdmin'));
 	}
 	
 	public function postPushToken(Request $request){
@@ -62,7 +62,14 @@ class ApiLoginController extends Controller
 				
 				$apiToken->api_token = $pushToken;
 				$user->apiToken()->save($apiToken);
+				
 				$user->save();
+				
+				//on vérifie que le token n'existe pas ailleurs
+				$apiToken = ApiToken::where("api_token","=", $pushToken);
+				if($apiToken!=null){
+					$apiToken->delete();
+				}
 			}
 			
 		}else{ //dans le cas où l'user est anonyme
@@ -75,6 +82,17 @@ class ApiLoginController extends Controller
 		
 		
 		return response()->json("ok");
+	}
+	
+	public function disconnect(Request $request){
+		$apiToken = ApiToken::where("api_token","=",$request->input("push_token"))->first();
+		$apiToken->user_id=null;
+		if($apiToken->save()){
+			return response()->json(["status"=>"ok"]);
+		}else{
+			return response()->json(["status"=>"error"],500);
+		}
+		
 	}
 	
 }

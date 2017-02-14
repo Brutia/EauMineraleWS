@@ -102,7 +102,9 @@ class PushNotificationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pushNotif = PushNotification::find($id);
+        $pushNotif->delete();
+        return redirect()->route("push.index");
     }
     
     public function sendNotif( Request $request){
