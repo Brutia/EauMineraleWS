@@ -44,7 +44,7 @@
 	<div class="navbar navbar-default navbar-fixed-bottom">
 		<div class="container">
 			<p class="navbar-text pull-left">
-				R&eacute;alis&eacute; par Guillaume ANDRES
+				R&eacute;alis&eacute; par Guillaume ANDRES pour eau min&eacute;rale
 			</p>
 
 		</div>
